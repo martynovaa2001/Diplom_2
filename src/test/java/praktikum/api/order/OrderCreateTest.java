@@ -1,5 +1,6 @@
 package praktikum.api.order;
 
+import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
 import org.junit.Before;
@@ -10,7 +11,6 @@ import praktikum.api.user.UserSteps;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.restassured.RestAssured.given;
 import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.*;
 import static praktikum.api.base.DataTests.*;
@@ -29,6 +29,7 @@ public class OrderCreateTest extends BaseApiTest {
 
     @Test
     @DisplayName("Успешное создание заказа с авторизацией и одним ингредиентом")
+    @Description("Создаем заказ с авторизацией и одним ингредиентом, ответ 200")
     public void testCreateOrderWithSingleIngredient() {
         Response orderResponse = orderSteps.createOrder(accessToken, SINGLE_INGREDIENT);
         orderResponse.then().log().all()
@@ -41,6 +42,7 @@ public class OrderCreateTest extends BaseApiTest {
 
     @Test
     @DisplayName("Успешное создание заказа с авторизацией и несколькими ингредиентами")
+    @Description("Создаем заказ с авторизацией и несколькими ингредиентами, ответ 200")
     public void testCreateOrderWithAuthAndMultipleIngredients() {
         Response orderResponse = orderSteps.createOrder(accessToken, VALID_INGREDIENTS);
         orderResponse.then()
@@ -51,25 +53,21 @@ public class OrderCreateTest extends BaseApiTest {
                 .body("order.owner", notNullValue());
     }
 
-        @Test
+    @Test
     @DisplayName("Создание заказа без авторизации")
+    @Description("Создаем заказ без авторизации с валидным ингредиентом, ответ 401")
     public void testCreateOrderWithoutAuth() {
         List<String> ingredients = new ArrayList<>(VALID_INGREDIENTS);
+        Response response = orderSteps.createOrderWithoutAuth(ingredients);
 
-        given()
-                .contentType("application/json")
-                .body(ingredients)
-                .log().body()  // Логируем отправляемый запрос
-                .when()
-                .post(ORDERS_PATH)
-                .then()
-                .log().body()  // Логируем ответ
-                .statusCode(SC_BAD_REQUEST)
+        response.then()
+                .statusCode(SC_UNAUTHORIZED)
                 .body("success", is(false));
     }
 
     @Test
-    @DisplayName("Ошибка создания заказа с неверным хешем ингредиентом")
+    @DisplayName("Ошибка создания заказа с неверным хешем ингредиента")
+    @Description("Создаем заказ с авторизацией и неверным хешем ингредиента, ответ 500")
     public void testCreateOrderWithInvalidIngredient() {
         List<String> ingredients = new ArrayList<>();
         ingredients.add(INVALID_INGREDIENT_ID);
@@ -81,6 +79,7 @@ public class OrderCreateTest extends BaseApiTest {
 
     @Test
     @DisplayName("Ошибка создания заказа без ингредиентов")
+    @Description("Создаем заказ с авторизацией и без ингредиентов, ответ 400")
     public void testCreateOrderWithoutIngredients() {
         List<String> emptyIngredients = new ArrayList<>();
 

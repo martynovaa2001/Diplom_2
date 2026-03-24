@@ -30,5 +30,18 @@ public class OrderSteps {
                 .extract()
                 .response();
     }
+
+    @Step("Создание заказа без авторизации")
+    public Response createOrderWithoutAuth(List<String> ingredients) {
+        return given()
+                .log().all()
+                .contentType("application/json")
+                .body(new OrderRequest(ingredients))
+                .when()
+                .get(ORDERS_PATH)
+                .then()
+                .extract()
+                .response();
+    }
 }
 

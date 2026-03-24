@@ -1,5 +1,6 @@
 package praktikum.api.user;
 
+import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
 import org.junit.Test;
@@ -15,6 +16,7 @@ public class UserLoginTest extends BaseApiTest {
 
     @Test
     @DisplayName("Успешный вход существующего пользователя")
+    @Description("Успешный логин существующего пользователя, ответ 200")
     public void testUserLoginSuccess() {
         userSteps.registerUser(testUser)
                 .then().statusCode(SC_OK);
@@ -28,6 +30,7 @@ public class UserLoginTest extends BaseApiTest {
 
     @Test
     @DisplayName("Вход с неверным email")
+    @Description("Логин с неверным email, ответ 401")
     public void testUserLoginWrongEmail() {
         userSteps.registerUser(testUser)
                 .then().statusCode(SC_OK);
@@ -46,6 +49,7 @@ public class UserLoginTest extends BaseApiTest {
 
     @Test
     @DisplayName("Вход с неверным паролем")
+    @Description("Регистрируем пользователя и логинимся с неверным паролем, ответ 401")
     public void testUserLoginWrongPassword() {
         // Регистрируем пользователя
         userSteps.registerUser(testUser)
